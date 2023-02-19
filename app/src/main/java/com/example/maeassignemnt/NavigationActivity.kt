@@ -45,9 +45,30 @@ class NavigationActivity : AppCompatActivity() {
 
         // Hook your navigation controller to bottom navigation view
         navView.setupWithNavController(navController)
+
+        navView.setOnItemSelectedListener {item->
+            when (item.itemId) {
+                R.id.home -> {
+                    navController.navigate(R.id.home)
+                    true
+                }
+                R.id.search ->{
+                    navController.navigate(R.id.search)
+                    true
+                }
+                R.id.profile->{
+                    navController.navigate(R.id.profile)
+                    true
+                }
+                else -> {
+                    navController.navigate(R.id.home)
+                    true
+                }
+            }
+        }
     }
 
-    private fun reload(){
+    private fun reload() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }

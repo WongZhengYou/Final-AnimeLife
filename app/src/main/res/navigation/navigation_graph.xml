@@ -20,4 +20,9 @@
         android:name="com.example.maeassignemnt.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/details"
+        android:name="com.example.maeassignemnt.DetailsFragment"
+        android:label="fragment_details"
+        tools:layout="@layout/fragment_details" />
 </navigation>
