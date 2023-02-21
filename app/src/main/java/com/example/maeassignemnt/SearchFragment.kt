@@ -1,32 +1,35 @@
 package com.example.maeassignemnt
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.maeassignemnt.data.AnimeList
+import com.example.maeassignemnt.network.AnimeService
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SearchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
+    private lateinit var search: TextInputEditText
+    private lateinit var btn_search: ExtendedFloatingActionButton
+    lateinit var searchData: String
+    lateinit var anime_recyclerview: RecyclerView
+    private lateinit var pb_loading: ProgressBar
+    lateinit var adapter: RecyclerViewAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
@@ -34,26 +37,61 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_search, container, false)
+
+        search = view.findViewById(R.id.et_search)
+        btn_search = view.findViewById<ExtendedFloatingActionButton>(R.id.btn_search)
+        anime_recyclerview = view.findViewById<RecyclerView>(R.id.recyclerview2)
+        pb_loading = view.findViewById(R.id.pb_loading2)
+        adapter = RecyclerViewAdapter(context, null)
+        searchData = ""
+        btn_search.setOnClickListener {
+            if (search.text.isNullOrEmpty()) {
+
+            } else {
+                searchData = search.text.toString().trim()
+                getSearchAnime()
+            }
+        }
+        return view
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SearchFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+
+            }
+    }
+
+    private fun getSearchAnime() {
+        val animeList: Call<AnimeList> = AnimeService.animeInstance.getAnimeSearch(searchData)
+        bindRecyclerView(animeList)
+    }
+
+    private fun bindRecyclerView(animeList: Call<AnimeList>) {
+        pb_loading.visibility = View.VISIBLE
+        animeList.enqueue(object : Callback<AnimeList> {
+            override fun onResponse(call: Call<AnimeList>, response: Response<AnimeList>) {
+                val animeList = response.body()
+                if (animeList != null) {
+                    Log.d("HomeData", animeList.toString())
+                    adapter = RecyclerViewAdapter(context, animeList.data)
+                    anime_recyclerview.adapter = adapter
+                    anime_recyclerview.layoutManager = LinearLayoutManager(
+                        view?.context,
+                        LinearLayoutManager.VERTICAL,
+                        false
+                    )
+                    pb_loading.visibility = View.GONE
                 }
             }
+
+            override fun onFailure(call: Call<AnimeList>, t: Throwable) {
+                Log.d("HomeData", t.toString())
+            }
+
+        })
     }
 }

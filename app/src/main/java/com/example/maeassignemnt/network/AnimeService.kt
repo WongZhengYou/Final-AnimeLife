@@ -27,6 +27,8 @@ import retrofit2.http.Query
 //limit
 ////https://api.jikan.moe/v4/top/anime?limit={id}
 
+// anime search
+
 const val baseURL = "https://api.jikan.moe"
 interface AnimeInterface {
 
@@ -39,6 +41,10 @@ interface AnimeInterface {
 
     @GET("/v4/top/anime")
     fun getTopAnimeByFilter(@Query("page") page: Int?, @Query("limit")limit: Int?,@Query("filter")filter: String?): Call<AnimeList>
+
+    @GET("/v4/anime")
+    fun getAnimeSearch(@Query("q")search: String?,@Query("order_by")orderBy: String? = "favorites",@Query("sort")sort: String? = "desc"): Call<AnimeList>
+
 
 }
 
