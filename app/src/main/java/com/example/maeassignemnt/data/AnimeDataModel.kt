@@ -12,7 +12,7 @@ class AnimeDataModel() :Parcelable{
     @SerializedName("images")
     var images: Images? = null
     @SerializedName("trailer")
-    var trailer = null
+    var trailer: Trailer? = null
     @SerializedName("title")
     var title: String? = null
     @SerializedName("title_english")
@@ -126,4 +126,10 @@ class ImageUrl{
     val image_url: String?=null
     val small_image_url: String?=null
     val large_image_url: String?=null
+}
+
+class Trailer{
+    val youtube_id: String?=null
+    val url: String?=null
+    val embed_url: String? = null
 }
